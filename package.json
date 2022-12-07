@@ -37,6 +37,6 @@
     "metro-react-native-babel-preset": "latest"
   },
   "dependencies": {
-    "react-native-snap-carousel": "latest"
+    "react-native-snap-carousel": "git+https://github.com/pallavi000/react-native-snap-carousel.git"
   }
 }
