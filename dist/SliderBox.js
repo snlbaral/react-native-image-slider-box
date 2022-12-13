@@ -9,6 +9,7 @@ import {
 
 import Carousel, { Pagination } from "react-native-snap-carousel"; //Thank From distributer(s) of this lib
 import styles from "./SliderBox.style";
+import Pinchable from "react-native-pinchable";
 
 // -------------------Props--------------------
 // images
@@ -61,7 +62,7 @@ export class SliderBox extends Component {
     this._ref.snapToItem(index);
     const { currentImageEmitter } = this.props;
     this.setState({ currentImage: index }, () => {
-      if (currentImageEmitter) {
+      if (currentImageEmitter && typeof currentImageEmitter === "function") {
         currentImageEmitter(this.state.currentImage);
       }
     });
@@ -79,7 +80,11 @@ export class SliderBox extends Component {
       imageLoadingColor = "#E91E63",
       underlayColor = "transparent",
       activeOpacity = 0.85,
+      enablePinchable = false,
+      maximumZoomScale = 10,
+      minimumZoomScale = 1,
     } = this.props;
+
     return (
       <View
         style={{
@@ -94,27 +99,56 @@ export class SliderBox extends Component {
           onPress={this.onCurrentImagePressedHandler}
           activeOpacity={activeOpacity}
         >
-          <ImageComponent
-            style={[
-              {
-                width: "100%",
-                height: sliderBoxHeight || 200,
-                alignSelf: "center",
-              },
-              ImageComponentStyle,
-            ]}
-            source={typeof item === "string" ? { uri: item } : item}
-            resizeMethod={resizeMethod || "resize"}
-            resizeMode={resizeMode || "cover"}
-            //onLoad={() => {}}
-            //onLoadStart={() => {}}
-            onLoadEnd={() => {
-              let t = this.state.loading;
-              t[index] = true;
-              this.setState({ loading: t });
-            }}
-            {...this.props}
-          />
+          {enablePinchable ? (
+            <Pinchable
+              minimumZoomScale={minimumZoomScale}
+              maximumZoomScale={maximumZoomScale}
+            >
+              <ImageComponent
+                style={[
+                  {
+                    width: "100%",
+                    height: sliderBoxHeight || 200,
+                    alignSelf: "center",
+                  },
+                  ImageComponentStyle,
+                ]}
+                source={typeof item === "string" ? { uri: item } : item}
+                resizeMethod={resizeMethod || "resize"}
+                resizeMode={resizeMode || "cover"}
+                //onLoad={() => {}}
+                //onLoadStart={() => {}}
+                onLoadEnd={() => {
+                  let t = this.state.loading;
+                  t[index] = true;
+                  this.setState({ loading: t });
+                }}
+                {...this.props}
+              />
+            </Pinchable>
+          ) : (
+            <ImageComponent
+              style={[
+                {
+                  width: "100%",
+                  height: sliderBoxHeight || 200,
+                  alignSelf: "center",
+                },
+                ImageComponentStyle,
+              ]}
+              source={typeof item === "string" ? { uri: item } : item}
+              resizeMethod={resizeMethod || "resize"}
+              resizeMode={resizeMode || "cover"}
+              //onLoad={() => {}}
+              //onLoadStart={() => {}}
+              onLoadEnd={() => {
+                let t = this.state.loading;
+                t[index] = true;
+                this.setState({ loading: t });
+              }}
+              {...this.props}
+            />
+          )}
         </TouchableHighlight>
         {!this.state.loading[index] && (
           <LoaderComponent
@@ -177,6 +211,7 @@ export class SliderBox extends Component {
       autoplayInterval,
     } = this.props;
 
+    console.log(width);
     return (
       <View>
         <Carousel
