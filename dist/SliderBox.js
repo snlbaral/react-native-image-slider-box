@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   TouchableHighlight,
   Dimensions,
+  Text,
 } from "react-native";
 
 import Carousel, { Pagination } from "react-native-snap-carousel"; //Thank From distributer(s) of this lib
@@ -210,10 +211,25 @@ export class SliderBox extends Component {
       useScrollView,
       autoplayInterval,
     } = this.props;
-
-    console.log(width);
+    const { currentImage } = this.state;
     return (
       <View>
+        <Text
+          style={{
+            position: "absolute",
+            right: 20,
+            top: 15,
+            backgroundColor: "#333",
+            color: "white",
+            zIndex: 5,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 15,
+            fontSize: 12,
+          }}
+        >
+          {currentImage + 1}/{images.length}
+        </Text>
         <Carousel
           autoplayDelay={autoplayDelay}
           autoplayInterval={autoplayInterval || 3000}
