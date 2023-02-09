@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef } from "react";
 import {
   View,
   Image,
@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
   Dimensions,
   Text,
+  ScrollView,
 } from "react-native";
 
 import Carousel, { Pagination } from "react-native-snap-carousel"; //Thank From distributer(s) of this lib
@@ -47,6 +48,7 @@ export class SliderBox extends Component {
       this.onCurrentImagePressedHandler.bind(this);
     this.onSnap = this.onSnap.bind(this);
     this._renderItem = this._renderItem.bind(this);
+    this.scrollViewRef = React.createRef();
   }
 
   componentDidMount() {
@@ -166,6 +168,13 @@ export class SliderBox extends Component {
     );
   }
 
+  componentDidUpdate(prevProps) {
+    this.scrollViewRef?.current?.scrollTo({
+      x: this.state.currentImage * (6 + 3) + 9 / 2 - 75 / 2 + 9,
+      animated: true,
+    });
+  }
+
   get pagination() {
     const { currentImage } = this.state;
     const {
@@ -195,6 +204,39 @@ export class SliderBox extends Component {
             : {},
           paginationBoxStyle ? paginationBoxStyle : {},
         ]}
+        renderDots={(activeIndex, total, context) => {
+          return (
+            <ScrollView
+              ref={this.scrollViewRef}
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              style={{ maxWidth: 75 }}
+              contentContainerStyle={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {Array.from({ length: total }, (_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    {
+                      width: 6,
+                      height: 6,
+                      borderRadius: 3,
+                      marginHorizontal: 3,
+                      backgroundColor:
+                        i === activeIndex
+                          ? dotColor || colors.dotColors
+                          : inactiveDotColor || colors.dotColors,
+                    },
+                  ]}
+                />
+              ))}
+            </ScrollView>
+          );
+        }}
         {...this.props}
       />
     );
